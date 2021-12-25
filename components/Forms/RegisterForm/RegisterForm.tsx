@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Pollish from "../../../public/images/pollish.svg";
 import { Box, Button, Grid, makeStyles, TextField } from "@material-ui/core";
 import styled from "styled-components";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { DatePicker } from "@material-ui/pickers";
 
 const LogoWrapper = styled.div`
     width: 200px;
@@ -33,7 +34,15 @@ const RegisterForm = () => {
         console.log(values);
     };
 
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors }, control } = useForm({
+        defaultValues: {
+            firstName: "",
+            lastName: "",
+            email: "",
+            password: "",
+            birthDate: null,
+        }
+    });
     return (
         <Box
             className={classes.form}
@@ -53,8 +62,8 @@ const RegisterForm = () => {
                             label="Imię"
                             autoFocus
                             {...register("firstName", { required: true })}
-                            error={errors.firstName}
-                            helperText={errors.firstName}
+                            error={!!errors.firstName}
+                            helperText={errors.firstName?.message}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -66,6 +75,8 @@ const RegisterForm = () => {
                             name="lastName"
                             autoComplete="family-name"
                             {...register("lastName", { required: true })}
+                            error={!!errors.lastName}
+                            helperText={errors.lastName?.message}
                         />
                     </Grid>
                     <Grid item xs={12}>
@@ -76,12 +87,30 @@ const RegisterForm = () => {
                             label="Email"
                             name="email"
                             autoComplete="email"
-                            {...register("email", { required: true })}
+                            {...register("email", {
+                                required: true, pattern: {
+                                    value: /\S+@\S+\.\S+/,
+                                    message: "Wprowadzona wartość musi być adresem email"
+                                }
+                            })}
+                            error={!!errors.email}
+                            helperText={errors.email?.message}
 
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        
+                        <Controller
+                            control={control}
+                            name='birthDate'
+                            render={({ field }) => (
+                                <DatePicker
+                                    label='Data urodzenia'
+                                    onChange={(date) => field.onChange(date)}
+                                    value={field.value}
+                                    fullWidth
+                                />
+                            )}
+                        />
                     </Grid>
                     <Grid item xs={12} sm={6}>
 
@@ -95,7 +124,14 @@ const RegisterForm = () => {
                             type="password"
                             id="password"
                             autoComplete="new-password"
-                            {...register("password")}
+                            {...register("password", {
+                                required: true, minLength: {
+                                    value: 5,
+                                    message: "Minimalna długość hasła to 5"
+                                }
+                            })}
+                            error={!!errors.password}
+                            helperText={errors.password?.message}
                         />
                     </Grid>
 
