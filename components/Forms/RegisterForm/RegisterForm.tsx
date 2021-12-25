@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Pollish from "../../../public/images/pollish.svg";
-import { Box, Button, Grid, makeStyles, TextField } from "@material-ui/core";
+import { Box, Button, FormControl, FormHelperText, Grid, InputLabel, makeStyles, MenuItem, Select, TextField } from "@material-ui/core";
 import styled from "styled-components";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
@@ -41,6 +41,7 @@ const RegisterForm = () => {
             email: "",
             password: "",
             birthDate: null,
+            district: ""
         }
     });
     return (
@@ -113,7 +114,28 @@ const RegisterForm = () => {
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                            <InputLabel>Dzielnica</InputLabel>
+                            <Controller
+                                control={control}
+                                name='district'
+                                render={({ field }) => (
+                                    <Select
+                                        labelId="district"
+                                        id="district"
+                                        label="Dzielnica"
+                                        onChange={e => field.onChange(e.target.value)}
+                                        value={field.value}
+                                        error={!!errors.district}
+                                    >
+                                        <MenuItem value={10}>Ten</MenuItem>
+                                        <MenuItem value={20}>Twenty</MenuItem>
+                                        <MenuItem value={30}>Thirty</MenuItem>
+                                    </Select>
 
+                                )} />
+                            {errors.district?.message && <FormHelperText>{errors.district?.message}</FormHelperText>}
+                        </FormControl>
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
@@ -149,7 +171,7 @@ const RegisterForm = () => {
                     Masz juz konto? <Link href="/login">Zaloguj się!</Link>
                 </Grid>
             </Box>
-        </Box>
+        </Box >
     )
 }
 export default RegisterForm;
