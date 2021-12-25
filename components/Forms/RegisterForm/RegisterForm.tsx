@@ -1,17 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Pollish from "../../../public/images/pollish.svg";
-import { Box, Button, FormControl, FormHelperText, Grid, InputLabel, makeStyles, MenuItem, Select, TextField } from "@material-ui/core";
-import styled from "styled-components";
+import { Box, Button, FormControl, FormHelperText, Grid, InputLabel, makeStyles, MenuItem, Select, Snackbar, TextField } from "@material-ui/core";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 import { DatePicker } from "@material-ui/pickers";
+import { LogoWrapper } from "../../Logo/LogoWrapper";
+import gql from "graphql-tag";
+import { useMutation, useQuery } from "@apollo/client";
+import { Alert } from "@material-ui/lab";
+import { useRouter } from "next/router";
 
-const LogoWrapper = styled.div`
-    width: 200px;
-    max-width: 200px;
-`;
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
     form: {
         marginTop: 8,
         display: 'flex',
@@ -27,12 +27,44 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
+const DISTRITCS = gql`
+  query Districs {
+    districts {
+      id
+      name
+    }
+  }
+`;
+
+const CREATE_USER = gql`
+  mutation CreateUser($firstName: String!, $lastName: String!, $email: String!, $password: String!, $district: ID!, $birthDate: DateTime!) {
+    createUser(data: {firstName: $firstName, lastName: $lastName, email: $email, password: $password, district: { connect: {id: $district} }, birthDate: $birthDate}) {
+        firstName
+        lastName
+    }
+  }
+`
+
 const RegisterForm = () => {
+    const { data: districts } = useQuery(DISTRITCS);
+    const [createUser, { data: createdUser, loading, error }] = useMutation(CREATE_USER, { errorPolicy: 'all' });
+
+    const [created, setCreated] = useState(false);
     const classes = useStyles();
+    const router = useRouter();
 
     const onSubmit = (values) => {
-        console.log(values);
+        createUser({ variables: values }).catch(e => console.log(e));
     };
+
+    useEffect(() => {
+        if (!loading && createdUser) {
+            setCreated(true);
+            console.log(createUser);
+        } else {
+            setCreated(false);
+        }
+    }, [createdUser, loading, error]);
 
     const { register, handleSubmit, formState: { errors }, control } = useForm({
         defaultValues: {
@@ -48,6 +80,25 @@ const RegisterForm = () => {
         <Box
             className={classes.form}
         >
+            {created && <Snackbar
+                open={true}
+                autoHideDuration={6000}
+                onClose={() => {
+                    router.push("/login");
+                }}
+            >
+                <Alert severity="success">
+                    Pomyślnie utworzono konto. Witamy!
+                </Alert>
+            </Snackbar>}
+            {error && <Snackbar
+                open={true}
+                autoHideDuration={6000}
+            >
+                <Alert severity="error">
+                    Nastąpił błąd podczas tworzenia konta
+                </Alert>
+            </Snackbar>}
             <LogoWrapper>
                 <Pollish />
             </LogoWrapper>
@@ -122,15 +173,16 @@ const RegisterForm = () => {
                                 render={({ field }) => (
                                     <Select
                                         labelId="district"
+                                        fullWidth
                                         id="district"
                                         label="Dzielnica"
                                         onChange={e => field.onChange(e.target.value)}
                                         value={field.value}
                                         error={!!errors.district}
                                     >
-                                        <MenuItem value={10}>Ten</MenuItem>
-                                        <MenuItem value={20}>Twenty</MenuItem>
-                                        <MenuItem value={30}>Thirty</MenuItem>
+                                        {districts?.districts?.map(district => (
+                                            <MenuItem key={district.id} value={district.id}>{district.name}</MenuItem>
+                                        ))}
                                     </Select>
 
                                 )} />
@@ -148,8 +200,8 @@ const RegisterForm = () => {
                             autoComplete="new-password"
                             {...register("password", {
                                 required: true, minLength: {
-                                    value: 5,
-                                    message: "Minimalna długość hasła to 5"
+                                    value: 8,
+                                    message: "Minimalna długość hasła to 8"
                                 }
                             })}
                             error={!!errors.password}
