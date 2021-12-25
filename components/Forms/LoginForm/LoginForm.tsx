@@ -1,13 +1,8 @@
 import React from "react";
 import Pollish from "../../../public/images/pollish.svg";
 import { Box, Button, Grid, makeStyles, TextField } from "@material-ui/core";
-import styled from "styled-components";
 import Link from "next/link";
-
-const LogoWrapper = styled.div`
-    width: 200px;
-    max-width: 200px;
-`;
+import { LogoWrapper } from "../../Logo/LogoWrapper";
 
 const useStyles = makeStyles(theme => ({
     form: {
