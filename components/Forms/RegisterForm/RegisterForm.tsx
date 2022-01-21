@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Pollish from "../../../public/images/pollish.svg";
-import { Box, Button, FormControl, FormHelperText, Grid, InputLabel, makeStyles, MenuItem, Select, Snackbar, TextField } from "@material-ui/core";
+import { Box, Button, FormControl, FormHelperText, Grid, InputLabel, LinearProgress, makeStyles, MenuItem, Select, Snackbar, TextField } from "@material-ui/core";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 import { DatePicker } from "@material-ui/pickers";
@@ -13,11 +13,15 @@ import { useRouter } from "next/router";
 
 const useStyles = makeStyles(() => ({
     form: {
-        marginTop: 8,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        padding: 20
+        padding: 20,
+        maxWidth: 500,
+        margin: "8px auto",
+        flex: 1,
+        justifyContent: "center",
+        marginBottom: 64
     },
     submit: {
         marginTop: 20,
@@ -80,6 +84,7 @@ const RegisterForm = () => {
         <Box
             className={classes.form}
         >
+            { loading && <LinearProgress /> }
             {created && <Snackbar
                 open={true}
                 autoHideDuration={6000}

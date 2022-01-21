@@ -1,5 +1,5 @@
 module.exports = {
-  reactStrictMode: false,
+  reactStrictMode: true,
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,
@@ -9,13 +9,13 @@ module.exports = {
     return config;
   },
   target: "serverless",
-  async rewrites() {
-    return [
-      // Rewrite everything to `pages/index`
-      {
-        source: "/:any*",
-        destination: "/",
-      },
-    ];
-  },
+  // async rewrites() {
+  //   return [
+  //     // Rewrite everything to `pages/index`
+  //     {
+  //       source: "/:any*",
+  //       destination: "/",
+  //     },
+  //   ];
+  // },
 }

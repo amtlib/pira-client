@@ -11,7 +11,7 @@ export default class MyDocument extends Document {
         return (
             <Html lang="pl">
                 <Head />
-                <body>
+                <body style={{position: "relative", paddingBottom: "100px"}}>
                     <Main />
                     <NextScript />
                 </body>
