@@ -1,5 +1,5 @@
 {
-  "name": "pollish-client",
+  "name": "pira-client",
   "private": true,
   "scripts": {
     "dev": "next dev -p 5000",
@@ -25,6 +25,7 @@
     "react-chartist": "^0.14.4",
     "react-dom": "17.0.2",
     "react-hook-form": "^7.22.5",
+    "react-trello": "^2.2.11",
     "styled-components": "^5.3.3",
     "universal-cookie": "^4.0.4"
   },
@@ -35,9 +36,9 @@
     "eslint-config-next": "12.0.7",
     "typescript": "^4.5.4"
   },
-  "description": "Pollish",
+  "description": "Pira jak Jira",
   "version": "1.0.0",
   "main": "next.config.js",
-  "author": "Dominik Majka, Grzegorz Pach",
+  "author": "",
   "license": "ISC"
 }

@@ -33,7 +33,7 @@ export default function MyApp(props) {
   return (
     <SafeHydrate>
       <Head>
-        <title>Pollish</title>
+        <title>Pira</title>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
         <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css" />
       </Head>

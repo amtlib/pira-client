@@ -6,12 +6,9 @@ export type UserContextType = {
     loading: boolean;
     firstName?: string;
     lastName?: string;
-    birthDate?: Date;
-    district?: string;
     userId?: string;
     authenticate: (email?: string, password?: string) => void;
     unauthenticate: () => void;
-    updateUser: (values?: {firstName?: string; lastName?: string; birthDate?: Date; districtId?: string}) => void;
 };
 
 export const UserContext = createContext<UserContextType>({
@@ -19,5 +16,4 @@ export const UserContext = createContext<UserContextType>({
     loading: false,
     authenticate: () => {},
     unauthenticate: () => {},
-    updateUser: () => {}
 });

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import Pollish from "../../../public/images/pollish.svg";
+import Pira from "../../../public/images/pira.svg";
 import { Box, Button, Grid, LinearProgress, makeStyles, Snackbar, TextField } from "@material-ui/core";
 import Link from "next/link";
 import { LogoWrapper } from "../../Logo/LogoWrapper";
@@ -77,7 +77,7 @@ const LoginForm = () => {
                 className={classes.form}
             >
                 <LogoWrapper>
-                    <Pollish />
+                    <Pira />
                 </LogoWrapper>
                 <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
                     <Grid container spacing={2}>

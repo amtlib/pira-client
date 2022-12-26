@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Pollish from "../../../public/images/pollish.svg";
+import Pira from "../../../public/images/pira.svg";
 import { Box, Button, FormControl, FormHelperText, Grid, InputLabel, LinearProgress, makeStyles, MenuItem, Select, Snackbar, TextField } from "@material-ui/core";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
@@ -31,18 +31,10 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-const DISTRITCS = gql`
-  query Districs {
-    districts {
-      id
-      name
-    }
-  }
-`;
 
 const CREATE_USER = gql`
-  mutation CreateUser($firstName: String!, $lastName: String!, $email: String!, $password: String!, $district: ID!, $birthDate: DateTime!) {
-    createUser(data: {firstName: $firstName, lastName: $lastName, email: $email, password: $password, district: { connect: {id: $district} }, birthDate: $birthDate}) {
+  mutation CreateUser($firstName: String!, $lastName: String!, $email: String!, $password: String!) {
+    createUser(data: {firstName: $firstName, lastName: $lastName, email: $email, password: $password}) {
         firstName
         lastName
     }
@@ -50,7 +42,6 @@ const CREATE_USER = gql`
 `
 
 const RegisterForm = () => {
-    const { data: districts } = useQuery(DISTRITCS);
     const [createUser, { data: createdUser, loading, error }] = useMutation(CREATE_USER, { errorPolicy: 'all' });
 
     const [created, setCreated] = useState(false);
@@ -76,8 +67,6 @@ const RegisterForm = () => {
             lastName: "",
             email: "",
             password: "",
-            birthDate: null,
-            district: ""
         }
     });
     return (
@@ -105,7 +94,7 @@ const RegisterForm = () => {
                 </Alert>
             </Snackbar>}
             <LogoWrapper>
-                <Pollish />
+                <Pira />
             </LogoWrapper>
             <Box component="form" onSubmit={handleSubmit(onSubmit)}>
                 <Grid container spacing={2}>
@@ -154,45 +143,6 @@ const RegisterForm = () => {
                             helperText={errors.email?.message}
 
                         />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <Controller
-                            control={control}
-                            name='birthDate'
-                            render={({ field }) => (
-                                <DatePicker
-                                    label='Data urodzenia'
-                                    onChange={(date) => field.onChange(date)}
-                                    value={field.value}
-                                    fullWidth
-                                />
-                            )}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth>
-                            <InputLabel>Dzielnica</InputLabel>
-                            <Controller
-                                control={control}
-                                name='district'
-                                render={({ field }) => (
-                                    <Select
-                                        labelId="district"
-                                        fullWidth
-                                        id="district"
-                                        label="Dzielnica"
-                                        onChange={e => field.onChange(e.target.value)}
-                                        value={field.value}
-                                        error={!!errors.district}
-                                    >
-                                        {districts?.districts?.map(district => (
-                                            <MenuItem key={district.id} value={district.id}>{district.name}</MenuItem>
-                                        ))}
-                                    </Select>
-
-                                )} />
-                            {errors.district?.message && <FormHelperText>{errors.district?.message}</FormHelperText>}
-                        </FormControl>
                     </Grid>
                     <Grid item xs={12}>
                         <TextField

@@ -10,12 +10,7 @@ const AUTHENTICATE = gql`
                 item {
                     firstName
                     lastName
-                    type
                     id
-                    birthDate
-                    district {
-                        id
-                    }
                 }
             }
         }
@@ -28,12 +23,6 @@ const CHECK_TOKEN = gql`
             ... on User {
                 firstName
                 lastName
-                type
-                id
-                birthDate
-                district {
-                    id
-                }
             }
         }
     }
@@ -45,25 +34,13 @@ const UNAUTHENTICATE = gql`
     }
 `;
 
-const UPDATE_USER = gql`
-    mutation UpdateUser($userId: ID!, $firstName: String, $lastName: String, $birthDate: DateTime, $districtId: ID) {
-        updateUser(where: {id: $userId}, data: {firstName: $firstName, lastName: $lastName, birthDate: $birthDate, district: {connect: {id: $districtId}}}) {
-            id
-        }
-    }
-`
-
 export function UserContainer({ children }) {
     const [firstName, setFirstName] = useState<string | null>(null);
     const [lastName, setLastName] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
-    const [type, setType] = useState<string | null>(null);
-    const [birthDate, setBirthDate] = useState<Date | null>(null);
-    const [district, setDistrict] = useState<string | null>(null);
     const [loggedIn, setLoggedIn] = useState(false);
 
     const [authenticateUserWithPassword, { data: authenticateData, loading: authenticateLoading }] = useMutation(AUTHENTICATE);
-    const [updateUserApi] = useMutation(UPDATE_USER);
     const { data: checkTokenData, loading: checkTokenLoading } = useQuery(CHECK_TOKEN);
     const [endSession] = useMutation(UNAUTHENTICATE);
 
@@ -77,21 +54,8 @@ export function UserContainer({ children }) {
         setFirstName(null);
         setLastName(null);
         setUserId(null);
-        setType(null);
-        setBirthDate(null);
         setLoggedIn(false);
-        setDistrict(null);
     };
-
-    const updateUser = ({ firstName, lastName, birthDate, districtId }) => {
-        if (userId) {
-            updateUserApi({variables: {userId, firstName, lastName, birthDate, districtId}});
-            setFirstName(firstName);
-            setLastName(lastName);
-            setBirthDate(birthDate)
-            setDistrict(districtId);
-        }
-    }
 
     useEffect(() => {
         if (authenticateData && !authenticateLoading) {
@@ -99,11 +63,8 @@ export function UserContainer({ children }) {
             if (item) {
                 setFirstName(item.firstName);
                 setLastName(item.lastName);
-                setType(item.type);
                 setLoggedIn(true);
                 setUserId(item.id);
-                setBirthDate(item.birthDate)
-                setDistrict(item.district.id)
             }
         }
     }, [authenticateData, authenticateLoading]);
@@ -111,13 +72,10 @@ export function UserContainer({ children }) {
     useEffect(() => {
         if (checkTokenData?.authenticatedItem && !checkTokenLoading) {
             console.log(checkTokenData)
-            const { firstName, lastName, type, id, birthDate, district } = checkTokenData?.authenticatedItem;
+            const { firstName, lastName, id } = checkTokenData?.authenticatedItem;
             setFirstName(firstName);
             setLastName(lastName);
-            setType(type);
             setLoggedIn(true);
-            setBirthDate(birthDate);
-            setDistrict(district.id)
             setUserId(id);
         }
     }, [checkTokenData, checkTokenLoading])
@@ -127,12 +85,8 @@ export function UserContainer({ children }) {
         firstName,
         lastName,
         userId,
-        type,
-        birthDate,
-        district,
         loading: authenticateLoading || checkTokenLoading,
         loggedIn,
-        updateUser,
         authenticate,
         unauthenticate
     }}>{children}</UserContext.Provider>

@@ -32,17 +32,13 @@ const Navbar = () => {
         unauthenticate();
         setAnchorEl(null);
     }
-    const handleSettings = () => {
-
-        setAnchorEl(null);
-    };
 
     return (
         <AppBar position="static">
             <Toolbar>
                 <Link href="/">
                     <Typography variant="h6" className={classes.title}>
-                        Pollish
+                        Pira
                     </Typography>
                 </Link>
                 {loggedIn ? (
@@ -73,9 +69,6 @@ const Navbar = () => {
                             open={open}
                             onClose={() => setAnchorEl(null)}
                         >
-                             <Link href={`/settings`}>
-                                <MenuItem onClick={handleSettings}>Ustawienia</MenuItem>
-                             </Link>
                             <MenuItem onClick={handleLogOut}>Wyloguj się</MenuItem>
                         </Menu>
                     </div>
