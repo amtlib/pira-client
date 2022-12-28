@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
-import Pira from "../../../public/images/pira.svg";
-import { Box, Button, FormControl, FormHelperText, Grid, InputLabel, LinearProgress, makeStyles, MenuItem, Select, Snackbar, TextField } from "@material-ui/core";
+import { Box, Button, Grid, LinearProgress, makeStyles, Snackbar, TextField } from "@material-ui/core";
 import Link from "next/link";
-import { Controller, useForm } from "react-hook-form";
-import { DatePicker } from "@material-ui/pickers";
-import { LogoWrapper } from "../../Logo/LogoWrapper";
+import { useForm } from "react-hook-form";
 import gql from "graphql-tag";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { Alert } from "@material-ui/lab";
 import { useRouter } from "next/router";
+import { Logo } from "../../Logo/LogoWrapper";
 
 
 const useStyles = makeStyles(() => ({
@@ -55,25 +53,25 @@ const RegisterForm = () => {
     useEffect(() => {
         if (!loading && createdUser) {
             setCreated(true);
-            console.log(createUser);
         } else {
             setCreated(false);
         }
     }, [createdUser, loading, error]);
 
-    const { register, handleSubmit, formState: { errors }, control } = useForm({
+    const { register, handleSubmit, formState: { errors }, watch } = useForm({
         defaultValues: {
             firstName: "",
             lastName: "",
             email: "",
             password: "",
+            passwordRepeat: ""
         }
     });
     return (
         <Box
             className={classes.form}
         >
-            { loading && <LinearProgress /> }
+            {loading && <LinearProgress />}
             {created && <Snackbar
                 open={true}
                 autoHideDuration={6000}
@@ -82,7 +80,7 @@ const RegisterForm = () => {
                 }}
             >
                 <Alert severity="success">
-                    Pomyślnie utworzono konto. Witamy!
+                    Registred, hello!
                 </Alert>
             </Snackbar>}
             {error && <Snackbar
@@ -90,12 +88,10 @@ const RegisterForm = () => {
                 autoHideDuration={6000}
             >
                 <Alert severity="error">
-                    Nastąpił błąd podczas tworzenia konta
+                    Error during creating an accout
                 </Alert>
             </Snackbar>}
-            <LogoWrapper>
-                <Pira />
-            </LogoWrapper>
+            <Logo />
             <Box component="form" onSubmit={handleSubmit(onSubmit)}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6}>
@@ -105,7 +101,7 @@ const RegisterForm = () => {
                             required
                             fullWidth
                             id="firstName"
-                            label="Imię"
+                            label="First name"
                             autoFocus
                             {...register("firstName", { required: true })}
                             error={!!errors.firstName}
@@ -117,7 +113,7 @@ const RegisterForm = () => {
                             required
                             fullWidth
                             id="lastName"
-                            label="Nazwisko"
+                            label="Last name"
                             name="lastName"
                             autoComplete="family-name"
                             {...register("lastName", { required: true })}
@@ -144,23 +140,47 @@ const RegisterForm = () => {
 
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item sm={6} xs={12}>
                         <TextField
                             required
                             fullWidth
                             name="password"
-                            label="Hasło"
+                            label="Password"
                             type="password"
                             id="password"
-                            autoComplete="new-password"
+                            autoComplete="password"
                             {...register("password", {
                                 required: true, minLength: {
                                     value: 8,
-                                    message: "Minimalna długość hasła to 8"
+                                    message: "Hasło musi mieć conajmniej 8 znaków"
                                 }
                             })}
                             error={!!errors.password}
                             helperText={errors.password?.message}
+                        />
+                    </Grid>
+                    <Grid item sm={6} xs={12}>
+                        <TextField
+                            required
+                            fullWidth
+                            name="passwordRepeat"
+                            label="Repeat password"
+                            type="password"
+                            id="passwordRepeat"
+                            autoComplete="passwordRepeat"
+                            {...register("passwordRepeat", {
+                                required: true, validate: (val: string) => {
+                                    if (watch('password') != val) {
+                                        return "Hasła muszą być takie same";
+                                    }
+                                },
+                                minLength: {
+                                    value: 8,
+                                    message: "Hasło musi mieć conajmniej 8 znaków"
+                                }
+                            })}
+                            error={!!errors.passwordRepeat}
+                            helperText={errors.passwordRepeat?.message}
                         />
                     </Grid>
 

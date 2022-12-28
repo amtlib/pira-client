@@ -1,12 +1,11 @@
 import React, { useContext, useState } from "react";
-import Pira from "../../../public/images/pira.svg";
 import { Box, Button, Grid, LinearProgress, makeStyles, Snackbar, TextField } from "@material-ui/core";
 import Link from "next/link";
-import { LogoWrapper } from "../../Logo/LogoWrapper";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { Alert } from "@material-ui/lab";
 import { UserContext } from "../../../contexts/UserContext";
+import { Logo } from "../../Logo/LogoWrapper";
 
 const useStyles = makeStyles(theme => ({
     form: {
@@ -35,7 +34,7 @@ const useStyles = makeStyles(theme => ({
 
 const LoginForm = () => {
     const classes = useStyles();
-    const { authenticate, loading, firstName, lastName } = useContext(UserContext);
+    const { authenticate, loading, firstName, lastName, userId } = useContext(UserContext);
     const router = useRouter();
     const [submited, setSubmited] = useState(false);
 
@@ -55,7 +54,7 @@ const LoginForm = () => {
     return (
         <>
             { loading && <LinearProgress /> }
-            {!loading && firstName && <Snackbar
+            {!loading && userId && <Snackbar
                 open={true}
                 autoHideDuration={3000}
                 onClose={() => {
@@ -63,22 +62,20 @@ const LoginForm = () => {
                 }}
             >
                 <Alert severity="success">
-                    Zalogowano! Witaj, {firstName} {lastName}
+                    Logged in! Hello, {firstName} {lastName}
                 </Alert>
             </Snackbar>}
-            {!loading && !firstName && submited && <Snackbar
+            {!loading && !userId && submited && <Snackbar
                 open={true}
             >
                 <Alert severity="error">
-                    Błędny email lub hasło
+                    Invalid email or password
                 </Alert>
             </Snackbar>}
             <Box
                 className={classes.form}
             >
-                <LogoWrapper>
-                    <Pira />
-                </LogoWrapper>
+                <Logo />
                 <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
@@ -92,7 +89,7 @@ const LoginForm = () => {
                                 {...register("email", {
                                     required: true, pattern: {
                                         value: /\S+@\S+\.\S+/,
-                                        message: "Wprowadzona wartość musi być adresem email"
+                                        message: "You need to provide a valid email address"
                                     }
                                 })}
                                 error={!!errors.email}
@@ -104,7 +101,7 @@ const LoginForm = () => {
                                 required
                                 fullWidth
                                 name="password"
-                                label="Hasło"
+                                label="Password"
                                 type="password"
                                 id="password"
                                 autoComplete="password"
@@ -122,10 +119,10 @@ const LoginForm = () => {
                         color="primary"
                         className={classes.submit}
                     >
-                        Zaloguj
+                        Log in
                     </Button>
                     <Grid className={classes.register}>
-                        Nie masz konta? <Link href="/register">Zarejestruj się!</Link>
+                        You don't have an accout? <Link href="/register">Register!</Link>
                     </Grid>
                 </Box>
             </Box>
