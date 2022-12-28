@@ -7,11 +7,13 @@ import Button from '@material-ui/core/Button';
 import Link from 'next/link';
 import { UserContext } from '../../contexts/UserContext';
 import { Avatar, IconButton, Menu, MenuItem } from '@material-ui/core';
+import { Logo } from '../Logo/LogoWrapper';
 
 const useStyles = makeStyles(() => ({
     title: {
         flexGrow: 1,
-        cursor: "pointer"
+        cursor: "pointer",
+        height: "30px",
     },
     avatar: {
         backgroundColor: "#ff0000",
@@ -22,7 +24,7 @@ const Navbar = () => {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-    const { loggedIn, firstName, unauthenticate } = useContext(UserContext);
+    const { loggedIn, firstName, unauthenticate, email } = useContext(UserContext);
 
     const showMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -37,9 +39,9 @@ const Navbar = () => {
         <AppBar position="static">
             <Toolbar>
                 <Link href="/">
-                    <Typography variant="h6" className={classes.title}>
-                        Pira
-                    </Typography>
+                        <div className={classes.title}>
+                            <Logo />
+                        </div>
                 </Link>
                 {loggedIn ? (
                     <div>
@@ -51,7 +53,7 @@ const Navbar = () => {
                             color="inherit"
                         >
                             <Avatar aria-label="poll" className={classes.avatar}>
-                                {firstName?.substring(0, 1).toUpperCase()}
+                                {firstName?.substring(0, 1).toUpperCase() || email?.substring(0, 1).toUpperCase()}
                             </Avatar>
                         </IconButton>
                         <Menu
