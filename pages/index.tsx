@@ -1,46 +1,51 @@
 import { gql, useQuery } from "@apollo/client";
-import { Typography, Grid, Button, Card, CardMedia, CardContent, CardActions, Container, makeStyles, LinearProgress, Avatar, CardHeader } from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
-import dayjs from "dayjs";
-import Link from "next/link";
-import React, { useContext } from "react";
-import { Footer } from "../components/Footer/Footer";
-import Navigation from "../components/Navigation/Navigation";
+import React, { useContext, useMemo } from "react";
 import { UserContext } from "../contexts/UserContext";
-import Pira from "../public/images/pira.svg";
-import Board from "react-trello"
+import { LinearProgress } from "@material-ui/core";
+import { NoProjects } from "../components/ProjectCard/NoProjects";
+import { ProjectCard } from "../components/ProjectCard/ProjectCard";
+import { BasicLayout } from "../layouts/BasicLayout";
+import { LogInToSeeProjects } from "../components/ProjectCard/LogInToSeeProjects";
 
+const USER_PROJECTS = gql`
+ query USER_PROJECTS($userId: ID) {
+    assigneeUsers(where: {user: {id: {equals: $userId}}}) {
+      project {
+        id
+        title
+        tasksCount
+        description
+      }
+      role
+    }
+ }
+`;
 
 export default function Home() {
   const { userId } = useContext(UserContext);
-  // const { data, loading, error } = useQuery(POLLS, { variables: { userId }});
-  const data = {
-    lanes: [
-      {
-        id: 'lane1',
-        title: 'Planned Tasks',
-        label: '2/2',
-        cards: [
-          { id: 'Card1', title: 'Write Blog', description: 'Can AI make memes', label: '30 mins', draggable: false },
-          { id: 'Card2', title: 'Pay Rent', description: 'Transfer via NEFT', label: '5 mins', metadata: { sha: 'be312a1' } }
-        ]
-      },
-      {
-        id: 'lane2',
-        title: 'Completed',
-        label: '0/0',
-        cards: []
-      },
-    ]
-  }
+  const { data, loading } = useQuery(USER_PROJECTS, { variables: userId });
+
+  const projects = useMemo(() => {
+    return data?.assigneeUsers?.map(assignee => ({
+      project: { ...assignee.project },
+      role: assignee.role
+    })) || []
+  }, [data]);
+
   return (
-    <>
-      <Navigation />
-      {/* {loading && <LinearProgress />} */}
+    <BasicLayout>
+      {loading && <LinearProgress />}
       <div style={{ width: "100%", }}>
-        <Board data={data} />
+        {userId ? (<>{
+          projects ? projects.map(project => (
+            <ProjectCard project={project.project} key={project.project.id} />
+          )) : (
+            <NoProjects />
+          )}</>) : (
+            <LogInToSeeProjects />
+        )}
+
       </div>
-      <Footer />
-    </>
+    </BasicLayout>
   );
 }
