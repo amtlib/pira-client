@@ -55,10 +55,7 @@ export default function ProjectPage() {
         {
             id: 'backlog',
             title: 'Backlog',
-            cards: [
-                // { id: 'Card1', title: 'Write Blog', description: 'Can AI make memes', label: '30 mins', draggable: false },
-                { id: 'Card2', title: 'Pay Rent', description: 'Transfer via NEFT', label: '5 mins', metadata: { sha: 'be312a1' }, hideCardDeleteIcon: true }
-            ]
+            cards: []
         },
         {
             id: 'in_development',
@@ -97,6 +94,7 @@ export default function ProjectPage() {
                                 title: task.name,
                                 description: task.description,
                                 label: task.priority,
+                                projectId: data.project.id,
                                 createdBy: `${task.createdBy.firstName.substring(0, 1).toUpperCase()}. ${task.createdBy.lastName.toUpperCase()}`,
                                 assignedTo: `${task.assignedUser.firstName.substring(0, 1).toUpperCase()}. ${task.assignedUser.lastName.toUpperCase()}`,
                             }
