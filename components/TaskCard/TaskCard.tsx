@@ -43,6 +43,8 @@ export const TaskCard = ({
     assignedTo,
     createdBy,
     label,
+    id,
+    projectId,
     reporter,
     contributors,
 }) => {
@@ -53,7 +55,7 @@ export const TaskCard = ({
                 <Label priority={label}>{label}</Label>
             </Row>
             <Row>
-                <Link href="#">
+                <Link href={`/project/${projectId}/task/${id}`}>
                     <Title>{title}</Title>
                 </Link>
             </Row>
