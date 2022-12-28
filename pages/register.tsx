@@ -1,14 +1,11 @@
 import React from "react";
-import { Footer } from "../components/Footer/Footer";
 import RegisterForm from "../components/Forms/RegisterForm/RegisterForm";
-import Navigation from "../components/Navigation/Navigation";
+import { BasicLayout } from "../layouts/BasicLayout";
 
 export default function Register() {
     return (
-        <>
-            <Navigation />
+        <BasicLayout>
             <RegisterForm />
-            <Footer />
-        </>
+        </BasicLayout>
     )
 }
