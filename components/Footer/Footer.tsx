@@ -11,5 +11,5 @@ const FooterStyle = styled.div`
 `;
 
 export const Footer = () => (
-    <FooterStyle>Copyright 2022 - Dominik Majka, Grzegorz Pach</FooterStyle>
+    <FooterStyle>Copyright 2022 - PIRA Team - PK</FooterStyle>
 )
