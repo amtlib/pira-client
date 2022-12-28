@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import gql from "graphql-tag";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
@@ -32,6 +32,14 @@ const PROJECT = gql`
             }
           }
     }
+`;
+
+const MOVE_TASK = gql`
+    mutation MoveTask($id: ID, $status: TaskStatusType) {
+        updateTask(where: {id: $id}, data: {status: $status}) {
+            id
+        }
+    }
 `
 
 
@@ -41,6 +49,7 @@ export default function ProjectPage() {
     const { id } = router.query;
     const { userId } = useContext(UserContext);
     const { data, loading } = useQuery(PROJECT, { variables: { id } });
+    const [moveTask, { data: movedTask, error }] = useMutation(MOVE_TASK, { errorPolicy: 'all' });
 
     const [tasks, setTasks] = useState([
         {
@@ -52,17 +61,17 @@ export default function ProjectPage() {
             ]
         },
         {
-            id: 'in-development',
+            id: 'in_development',
             title: 'In development',
             cards: []
         },
         {
-            id: 'in-testing',
+            id: 'in_testing',
             title: 'In testing',
             cards: []
         },
         {
-            id: 'in-approval',
+            id: 'in_approval',
             title: 'In approval',
             cards: []
         },
@@ -101,11 +110,19 @@ export default function ProjectPage() {
         if (!data?.project && !loading) {
             router.push("/");
         }
-    }, [id, loading, data])
+    }, [id, loading, data]);
+
+    const handleDragEnd = (cardId, sourceLaneId, targetLaneId, position, cardDetails) => {
+        console.log(cardId, targetLaneId);
+        moveTask({variables: {
+            id: cardId,
+            status: targetLaneId
+        }})
+    }
 
     return (
         <BasicLayout>
-            <Board data={{ lanes: tasks }} hideCardDeleteIcon={true} components={{ Card: TaskCard }} />
+            <Board data={{ lanes: tasks }} hideCardDeleteIcon={true} components={{ Card: TaskCard }} handleDragEnd={handleDragEnd} />
         </BasicLayout>
     )
 
