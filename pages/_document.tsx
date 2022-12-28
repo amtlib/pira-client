@@ -9,9 +9,9 @@ import { ServerStyleSheets } from '@material-ui/core/styles';
 export default class MyDocument extends Document {
     render() {
         return (
-            <Html lang="pl">
+            <Html lang="en">
                 <Head />
-                <body style={{position: "relative", paddingBottom: "100px"}}>
+                <body style={{position: "relative", paddingBottom: "66px"}}>
                     <Main />
                     <NextScript />
                 </body>
