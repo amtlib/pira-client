@@ -10,6 +10,7 @@ const AUTHENTICATE = gql`
                 item {
                     firstName
                     lastName
+                    email
                     id
                 }
             }
@@ -23,6 +24,8 @@ const CHECK_TOKEN = gql`
             ... on User {
                 firstName
                 lastName
+                email
+                id
             }
         }
     }
@@ -38,6 +41,7 @@ export function UserContainer({ children }) {
     const [firstName, setFirstName] = useState<string | null>(null);
     const [lastName, setLastName] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
+    const [email, setEmail] = useState<string | null>(null);
     const [loggedIn, setLoggedIn] = useState(false);
 
     const [authenticateUserWithPassword, { data: authenticateData, loading: authenticateLoading }] = useMutation(AUTHENTICATE);
@@ -54,6 +58,7 @@ export function UserContainer({ children }) {
         setFirstName(null);
         setLastName(null);
         setUserId(null);
+        setEmail(null);
         setLoggedIn(false);
     };
 
@@ -63,6 +68,7 @@ export function UserContainer({ children }) {
             if (item) {
                 setFirstName(item.firstName);
                 setLastName(item.lastName);
+                setEmail(item.email);
                 setLoggedIn(true);
                 setUserId(item.id);
             }
@@ -72,9 +78,10 @@ export function UserContainer({ children }) {
     useEffect(() => {
         if (checkTokenData?.authenticatedItem && !checkTokenLoading) {
             console.log(checkTokenData)
-            const { firstName, lastName, id } = checkTokenData?.authenticatedItem;
+            const { firstName, lastName, id, email } = checkTokenData?.authenticatedItem;
             setFirstName(firstName);
             setLastName(lastName);
+            setEmail(email);
             setLoggedIn(true);
             setUserId(id);
         }
@@ -87,6 +94,7 @@ export function UserContainer({ children }) {
         userId,
         loading: authenticateLoading || checkTokenLoading,
         loggedIn,
+        email,
         authenticate,
         unauthenticate
     }}>{children}</UserContext.Provider>

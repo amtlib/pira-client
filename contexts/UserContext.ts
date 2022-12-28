@@ -6,6 +6,7 @@ export type UserContextType = {
     loading: boolean;
     firstName?: string;
     lastName?: string;
+    email?: string;
     userId?: string;
     authenticate: (email?: string, password?: string) => void;
     unauthenticate: () => void;
