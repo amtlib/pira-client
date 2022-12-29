@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { UserContext } from '../../contexts/UserContext';
 import { Avatar, IconButton, Menu, MenuItem } from '@material-ui/core';
 import { Logo } from '../Logo/LogoWrapper';
+import { ModalContext } from '../../contexts/ModalContext';
 
 const useStyles = makeStyles(() => ({
     title: {
@@ -25,6 +26,7 @@ const Navbar = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const { loggedIn, firstName, unauthenticate, email } = useContext(UserContext);
+    const { setIsCreateProjectModalOpen } = useContext(ModalContext);
 
     const showMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -39,10 +41,13 @@ const Navbar = () => {
         <AppBar position="static">
             <Toolbar>
                 <Link href="/">
-                        <div className={classes.title}>
-                            <Logo />
-                        </div>
+                    <div className={classes.title}>
+                        <Logo />
+                    </div>
                 </Link>
+                <div>
+                    <Button variant="contained" onClick={() => setIsCreateProjectModalOpen(true)}>create project</Button>
+                    </div>
                 {loggedIn ? (
                     <div>
                         <IconButton
