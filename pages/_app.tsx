@@ -9,6 +9,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import { ApolloProvider } from '@apollo/client';
 import client from '../apollo-client';
 import { UserContainer } from '../containers/UserContainer';
+import { ModalContainer } from '../containers/ModalContainer';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -41,9 +42,11 @@ export default function MyApp(props) {
         <ApolloProvider client={client}>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <UserContainer>
-              {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-              <CssBaseline />
-              <Component />
+              <ModalContainer>
+                {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+                <CssBaseline />
+                <Component />
+              </ModalContainer>
             </UserContainer>
           </MuiPickersUtilsProvider>
         </ApolloProvider>
