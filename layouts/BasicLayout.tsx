@@ -1,5 +1,6 @@
 import { Footer } from "../components/Footer/Footer"
 import { CreateProjectModal } from "../components/Modals/CreateProjectModal"
+import { CreateTaskModal } from "../components/Modals/CreateTaskModal"
 import Navbar from "../components/Navigation/Navigation"
 
 export const BasicLayout = ({ children }) => {
@@ -10,6 +11,7 @@ export const BasicLayout = ({ children }) => {
             <Navbar />
             {children}
             <CreateProjectModal />
+            <CreateTaskModal />
             <Footer />
         </>
     )

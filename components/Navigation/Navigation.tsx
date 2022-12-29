@@ -26,7 +26,7 @@ const Navbar = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const { loggedIn, firstName, unauthenticate, email } = useContext(UserContext);
-    const { setIsCreateProjectModalOpen } = useContext(ModalContext);
+    const { setIsCreateProjectModalOpen, setIsCreateTaskModalOpen } = useContext(ModalContext);
 
     const showMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -47,6 +47,7 @@ const Navbar = () => {
                 </Link>
                 <div>
                     <Button variant="contained" onClick={() => setIsCreateProjectModalOpen(true)}>create project</Button>
+                    <Button variant="contained" onClick={() => setIsCreateTaskModalOpen(true)}>create task</Button>
                     </div>
                 {loggedIn ? (
                     <div>
