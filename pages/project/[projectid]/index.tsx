@@ -3,10 +3,10 @@ import gql from "graphql-tag";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import Board from 'react-trello'
-import { TaskCard } from "../../components/TaskCard/TaskCard";
+import { TaskCard } from "../../../components/TaskCard/TaskCard";
 
-import { UserContext } from "../../contexts/UserContext";
-import { BasicLayout } from "../../layouts/BasicLayout";
+import { UserContext } from "../../../contexts/UserContext";
+import { BasicLayout } from "../../../layouts/BasicLayout";
 
 const PROJECT = gql`
     query PROJECT($id: ID) {
@@ -46,9 +46,9 @@ const MOVE_TASK = gql`
 export default function ProjectPage() {
     const router = useRouter();
 
-    const { id } = router.query;
+    const { projectid } = router.query;
     const { userId } = useContext(UserContext);
-    const { data, loading } = useQuery(PROJECT, { variables: { id } });
+    const { data, loading } = useQuery(PROJECT, { variables: { id: projectid } });
     const [moveTask, { data: movedTask, error }] = useMutation(MOVE_TASK, { errorPolicy: 'all' });
 
     const [tasks, setTasks] = useState([
@@ -104,11 +104,11 @@ export default function ProjectPage() {
     }, [data])
 
     useEffect(() => {
-        console.log(data)
+        console.log(data, projectid)
         if (!data?.project && !loading) {
             router.push("/");
         }
-    }, [id, loading, data]);
+    }, [projectid, loading, data]);
 
     const handleDragEnd = (cardId, sourceLaneId, targetLaneId, position, cardDetails) => {
         console.log(cardId, targetLaneId);
