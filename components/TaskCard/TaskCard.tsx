@@ -7,6 +7,7 @@ const Wrapper = styled.div`
     padding: 5px 10px;
     cursor: pointer;
     border-radius: 5px;
+    margin: 5px 0;
 `;
 
 const Title = styled.h3`
