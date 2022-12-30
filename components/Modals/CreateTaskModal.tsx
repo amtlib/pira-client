@@ -1,7 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import { Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Button, FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
 import { KeyboardDatePicker } from "@material-ui/pickers";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ResourceContext } from "../../contexts/ResourceContext";
@@ -21,7 +21,7 @@ export const CreateTaskModal = () => {
     const [createTask, { loading, error }] = useMutation(CREATE_TASK, {refetchQueries: ["PROJECT"]});
     const { userId } = useContext(UserContext);
 
-    const { register, handleSubmit, control, formState: { errors } } = useForm({
+    const { register, handleSubmit, control, formState: { errors }, reset } = useForm({
         defaultValues: {
             dueDate: null,
             estimatedTime: 0,
@@ -32,12 +32,16 @@ export const CreateTaskModal = () => {
         }
     });
 
+    useEffect(() => {
+        reset()
+    }, [isCreateTaskModalOpen])
+
     const handleCreateTask = async (values) => {
         createTask({variables: {
             projectId: activeProjectId,
             userId,
             dueDate: values.dueDate,
-            estimatedTime: values.estimatedTime,
+            estimatedTime: +values.estimatedTime,
             priority: values.priority,
             name: values.name,
             description: values.description,
