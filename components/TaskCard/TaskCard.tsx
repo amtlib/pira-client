@@ -60,7 +60,12 @@ export const TaskCard = ({
                 </Link>
             </Row>
             <Row>
-                <Person>Assigned to {assignedTo}</Person>
+                {assignedTo ? (
+                    <Person>Assigned to {assignedTo}</Person>
+
+                ) : (
+                    <Person>unassigned</Person>
+                )}
             </Row>
         </Wrapper>
     );
