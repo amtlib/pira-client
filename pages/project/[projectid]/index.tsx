@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import Board from 'react-trello'
 import { TaskCard } from "../../../components/TaskCard/TaskCard";
+import { ResourceContext } from "../../../contexts/ResourceContext";
 
 import { UserContext } from "../../../contexts/UserContext";
 import { BasicLayout } from "../../../layouts/BasicLayout";
@@ -42,12 +43,12 @@ const MOVE_TASK = gql`
     }
 `
 
-
 export default function ProjectPage() {
     const router = useRouter();
 
     const { projectid } = router.query;
     const { userId } = useContext(UserContext);
+    const { setActiveProjectId } = useContext(ResourceContext);
     const { data, loading } = useQuery(PROJECT, { variables: { id: projectid } });
     const [moveTask, { data: movedTask, error }] = useMutation(MOVE_TASK, { errorPolicy: 'all' });
 
@@ -79,8 +80,6 @@ export default function ProjectPage() {
         }
     ])
 
-    // const { project } = data;
-
     useEffect(() => {
         if (data?.project?.tasks) {
             const { tasks: apiTasks } = data.project;
@@ -96,7 +95,7 @@ export default function ProjectPage() {
                                 label: task.priority,
                                 projectId: data.project.id,
                                 createdBy: `${task.createdBy.firstName.substring(0, 1).toUpperCase()}. ${task.createdBy.lastName.toUpperCase()}`,
-                                assignedTo: `${task.assignedUser.firstName.substring(0, 1).toUpperCase()}. ${task.assignedUser.lastName.toUpperCase()}`,
+                                assignedTo: task.assignedUser ? `${task.assignedUser?.firstName.substring(0, 1).toUpperCase()}. ${task.assignedUser?.lastName.toUpperCase()}` : null,
                             }
                         ))
                 })))
@@ -107,6 +106,11 @@ export default function ProjectPage() {
         console.log(data, projectid)
         if (!data?.project && !loading) {
             router.push("/");
+        }
+        setActiveProjectId(projectid?.toString());
+
+        return () => {
+            setActiveProjectId(null);
         }
     }, [projectid, loading, data]);
 
@@ -123,5 +127,4 @@ export default function ProjectPage() {
             <Board data={{ lanes: tasks }} hideCardDeleteIcon={true} components={{ Card: TaskCard }} handleDragEnd={handleDragEnd} />
         </BasicLayout>
     )
-
 }
