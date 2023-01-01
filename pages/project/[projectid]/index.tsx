@@ -103,7 +103,6 @@ export default function ProjectPage() {
     }, [data])
 
     useEffect(() => {
-        console.log(data, projectid)
         if (!data?.project && !loading) {
             router.push("/");
         }
@@ -115,7 +114,6 @@ export default function ProjectPage() {
     }, [projectid, loading, data]);
 
     const handleDragEnd = (cardId, sourceLaneId, targetLaneId, position, cardDetails) => {
-        console.log(cardId, targetLaneId);
         moveTask({variables: {
             id: cardId,
             status: targetLaneId

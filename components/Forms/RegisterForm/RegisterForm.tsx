@@ -47,7 +47,7 @@ const RegisterForm = () => {
     const router = useRouter();
 
     const onSubmit = (values) => {
-        createUser({ variables: values }).catch(e => console.log(e));
+        createUser({ variables: values }).catch(e => console.error(e));
     };
 
     useEffect(() => {

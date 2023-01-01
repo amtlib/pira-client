@@ -77,7 +77,6 @@ export function UserContainer({ children }) {
 
     useEffect(() => {
         if (checkTokenData?.authenticatedItem && !checkTokenLoading) {
-            console.log(checkTokenData)
             const { firstName, lastName, id, email } = checkTokenData?.authenticatedItem;
             setFirstName(firstName);
             setLastName(lastName);

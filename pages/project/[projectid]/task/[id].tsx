@@ -7,6 +7,32 @@ import Board from 'react-trello'
 import { UserContext } from "../../../../contexts/UserContext";
 import { BasicLayout } from "../../../../layouts/BasicLayout";
 
+const TASK = gql`
+    query GetTask($id: ID) {
+        task(where: {id:"clc9v4v5i79783524v4up1tos"}) {
+            id
+            name
+            description
+            priority
+            dueDate
+            estimatedTime
+            status
+            parentTask {
+              id
+              name
+            }
+            assignedUser {
+              firstName
+              lastName
+            }
+            createdBy {
+              firstName
+              lastName
+            }
+          }
+    }
+`
+
 // const PROJECT = gql`
 //     query PROJECT($id: ID) {
 //         project(where: {id: $id}) {
@@ -46,7 +72,12 @@ export default function TaskPage() {
     const router = useRouter();
 
     const { id } = router.query;
-    const { userId } = useContext(UserContext);
+    // const { userId } = useContext(UserContext);
+
+    const { data, loading } = useQuery(TASK);
+    console.log(data)
+
+
     // const { data, loading } = useQuery(PROJECT, { variables: { id } });
     // const [moveTask, { data: movedTask, error }] = useMutation(MOVE_TASK, { errorPolicy: 'all' });
 

@@ -25,7 +25,6 @@ export function ResourceContainer({ children }) {
     const { data } = useQuery(ASSIGNED_USERS, { variables: { projectId: activeProjectId } });
 
     useEffect(() => {
-        console.log("assigned users", data?.assigneeUsers.map(({ user }) => user.firstName))
         if (data) {
             setActiveProjectAssigneeUsers(data?.assigneeUsers.map(({ user }) => user as UserType));
         }
