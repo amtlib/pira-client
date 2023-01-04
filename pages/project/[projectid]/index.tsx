@@ -121,7 +121,7 @@ export default function ProjectPage() {
     }
 
     return (
-        <BasicLayout>
+        <BasicLayout page="project">
             <Board data={{ lanes: tasks }} hideCardDeleteIcon={true} components={{ Card: TaskCard }} handleDragEnd={handleDragEnd} />
         </BasicLayout>
     )

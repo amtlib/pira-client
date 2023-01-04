@@ -21,7 +21,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const Navbar = () => {
+const Navbar = ({ page }: {page?: "index" | "project" | "task" | "projectSettings" | "login" | "register" | "projects"}) => {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -46,8 +46,12 @@ const Navbar = () => {
                     </div>
                 </Link>
                 <div>
-                    <Button variant="contained" onClick={() => setIsCreateProjectModalOpen(true)}>create project</Button>
-                    <Button variant="contained" onClick={() => setIsCreateTaskModalOpen(true)}>create task</Button>
+                    {page === "projects" && (
+                        <Button variant="contained" onClick={() => setIsCreateProjectModalOpen(true)}>create project</Button>
+                    )}
+                    {page === "project" && (
+                        <Button variant="contained" onClick={() => setIsCreateTaskModalOpen(true)}>create task</Button>
+                    )}
                     </div>
                 {loggedIn ? (
                     <div>

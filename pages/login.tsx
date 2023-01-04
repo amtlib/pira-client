@@ -4,7 +4,7 @@ import { BasicLayout } from "../layouts/BasicLayout";
 
 export default function Login() {
     return (
-        <BasicLayout>
+        <BasicLayout page="login">
             <LoginForm />
         </BasicLayout>
     )

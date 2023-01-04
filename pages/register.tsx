@@ -4,7 +4,7 @@ import { BasicLayout } from "../layouts/BasicLayout";
 
 export default function Register() {
     return (
-        <BasicLayout>
+        <BasicLayout page="register">
             <RegisterForm />
         </BasicLayout>
     )

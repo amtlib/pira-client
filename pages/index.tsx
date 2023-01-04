@@ -33,7 +33,7 @@ export default function Home() {
   }, [data]);
 
   return (
-    <BasicLayout>
+    <BasicLayout page={projects ? "projects" : "index"}>
       {loading && <LinearProgress />}
       <div style={{ width: "100%", }}>
         {userId ? (<>{
