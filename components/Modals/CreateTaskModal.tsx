@@ -8,8 +8,8 @@ import { ResourceContext } from "../../contexts/ResourceContext";
 import { UserContext } from "../../contexts/UserContext";
 
 const CREATE_TASK = gql`
-    mutation CreateTask($projectId: ID, $userId: ID, $dueDate: DateTime, $estimatedTime: Int, $priority: TaskPriorityType, $name: String, $description: String, $assigneeId: ID) {
-        createTask(data: {project: {connect: {id: $projectId}}, createdBy: {connect: {id: $userId}}, dueDate: $dueDate, estimatedTime: $estimatedTime, priority: $priority, name: $name, description: $description, status: backlog, assignedUser: {connect: {id: $assigneeId}}}) {
+    mutation CreateTask($projectId: ID, $userId: ID, $dueDate: DateTime, $estimatedTime: Int, $priority: TaskPriorityType, $name: String, $description: String, $assigneeId: ID, $tags: String) {
+        createTask(data: {project: {connect: {id: $projectId}}, createdBy: {connect: {id: $userId}}, dueDate: $dueDate, estimatedTime: $estimatedTime, priority: $priority, name: $name, description: $description, status: backlog, assignedUser: {connect: {id: $assigneeId}}, tags: $tags}) {
             id
         }
     }
@@ -48,6 +48,7 @@ export const CreateTaskModal = () => {
                 name: values.name,
                 description: values.description,
                 assigneeId: values.assigneeId,
+                tags: values.tags
             }
         })
         setIsCreateTaskModalOpen(false)
