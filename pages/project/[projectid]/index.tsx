@@ -48,8 +48,8 @@ export default function ProjectPage() {
 
     const { projectid } = router.query;
     const { userId } = useContext(UserContext);
-    const { setActiveProjectId } = useContext(ResourceContext);
-    const { data, loading } = useQuery(PROJECT, { variables: { id: projectid } });
+    const { setActiveProjectId, activeProjectId } = useContext(ResourceContext);
+    const { data, loading } = useQuery(PROJECT, { variables: { id: projectid || activeProjectId } });
     const [moveTask, { data: movedTask, error }] = useMutation(MOVE_TASK, { errorPolicy: 'all' });
 
     const [tasks, setTasks] = useState([
