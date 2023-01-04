@@ -9,6 +9,7 @@ import { UserContext } from '../../contexts/UserContext';
 import { Avatar, IconButton, Menu, MenuItem } from '@material-ui/core';
 import { Logo } from '../Logo/LogoWrapper';
 import { ModalContext } from '../../contexts/ModalContext';
+import { ResourceContext } from '../../contexts/ResourceContext';
 
 const useStyles = makeStyles(() => ({
     title: {
@@ -21,12 +22,13 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const Navbar = ({ page }: {page?: "index" | "project" | "task" | "projectSettings" | "login" | "register" | "projects"}) => {
+const Navbar = ({ page }: { page?: "index" | "project" | "task" | "projectSettings" | "login" | "register" | "projects" }) => {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const { loggedIn, firstName, unauthenticate, email } = useContext(UserContext);
     const { setIsCreateProjectModalOpen, setIsCreateTaskModalOpen } = useContext(ModalContext);
+    const { activeProjectId } = useContext(ResourceContext);
 
     const showMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -50,9 +52,12 @@ const Navbar = ({ page }: {page?: "index" | "project" | "task" | "projectSetting
                         <Button variant="contained" onClick={() => setIsCreateProjectModalOpen(true)}>create project</Button>
                     )}
                     {page === "project" && (
-                        <Button variant="contained" onClick={() => setIsCreateTaskModalOpen(true)}>create task</Button>
+                        <>
+                            <Button variant="contained" onClick={() => setIsCreateTaskModalOpen(true)}>create task</Button>
+                            <Link href={`/project/${activeProjectId}/settings`}><Button variant="contained">project settings</Button></Link>
+                        </>
                     )}
-                    </div>
+                </div>
                 {loggedIn ? (
                     <div>
                         <IconButton
