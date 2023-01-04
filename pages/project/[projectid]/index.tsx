@@ -107,10 +107,6 @@ export default function ProjectPage() {
             router.push("/");
         }
         setActiveProjectId(projectid?.toString());
-
-        return () => {
-            setActiveProjectId(null);
-        }
     }, [projectid, loading, data]);
 
     const handleDragEnd = (cardId, sourceLaneId, targetLaneId, position, cardDetails) => {
