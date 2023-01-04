@@ -7,7 +7,9 @@ import { useRouter } from "next/router";
 import React, { useContext, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import styled from "styled-components";
+import { Comments } from "../../../../components/Comments/Comments";
 import { ResourceContext } from "../../../../contexts/ResourceContext";
+import { UserContext } from "../../../../contexts/UserContext";
 
 import { BasicLayout } from "../../../../layouts/BasicLayout";
 
@@ -21,6 +23,7 @@ const GET_TASK = gql`
             dueDate
             estimatedTime
             status
+            tags
             parentTask {
               id
               name
@@ -34,13 +37,21 @@ const GET_TASK = gql`
               firstName
               lastName
             }
+            comments {
+                id
+                text
+                author {
+                    firstName
+                    lastName
+                }
+            }
           }
     }
 `;
 
 const UPDATE_TASK = gql`
-    mutation UpdateTask($id: ID, $dueDate: DateTime, $estimatedTime: Int, $priority: TaskPriorityType, $name: String, $description: String) {
-        updateTask(where: {id: $id}, data: {dueDate: $dueDate, estimatedTime: $estimatedTime, priority: $priority, name: $name, description: $description }) {
+    mutation UpdateTask($id: ID, $dueDate: DateTime, $estimatedTime: Int, $priority: TaskPriorityType, $name: String, $description: String, $tags: String) {
+        updateTask(where: {id: $id}, data: {dueDate: $dueDate, estimatedTime: $estimatedTime, priority: $priority, name: $name, description: $description, tags: $tags }) {
             id
         }
     }
@@ -74,7 +85,7 @@ export default function TaskPage() {
 
     const { data, loading } = useQuery(GET_TASK, { variables: { id } });
     const { activeProjectId, activeProjectAssigneeUsers, setActiveProjectId } = useContext(ResourceContext);
-
+    const { userId } = useContext(UserContext);
 
     const [updateTask, { data: updatedTask, error }] = useMutation(UPDATE_TASK, { errorPolicy: 'all', refetchQueries: ["PROJECT", "GetTask"] });
     const [unattachTask, { data: unattachedTask }] = useMutation(UNATTACH_TASK, { errorPolicy: 'all', refetchQueries: ["PROJECT"] });
@@ -129,7 +140,7 @@ export default function TaskPage() {
 
     if (loading) {
         return (
-            <BasicLayout>
+            <BasicLayout page="index">
                 <LinearProgress />
             </BasicLayout>
         )
@@ -137,7 +148,7 @@ export default function TaskPage() {
 
 
     return (
-        <BasicLayout>
+        <BasicLayout page="task">
             <Link href={`/project/${activeProjectId}`}>Back to project</Link>
             <TaskWrapper>
                 <Box component="form" onSubmit={handleSubmit(handleUpdateTask)}>
@@ -261,6 +272,7 @@ export default function TaskPage() {
                     </Button>
 
                 </Box>
+                <Comments comments={data.task.comments} userId={userId} taskId={id.toString()} />
             </TaskWrapper>
 
         </BasicLayout>
