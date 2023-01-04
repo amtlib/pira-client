@@ -17,8 +17,8 @@ const CREATE_PROJECT_OWNER = gql`
     mutation CreateProjectOwner($userId: ID, $projectId: ID) {
         createAssigneeUser(data: {project: {connect: {id: $projectId}}, role: admin, user: {connect: {id: $userId}}}) {
             id
-          }
-}
+        }
+    }
 `
 
 
