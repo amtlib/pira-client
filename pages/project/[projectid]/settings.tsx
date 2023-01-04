@@ -10,6 +10,7 @@ import { UserContext } from "../../../contexts/UserContext";
 import { BasicLayout } from "../../../layouts/BasicLayout";
 import { Box, Button, Grid, TextField } from "@material-ui/core";
 import { useForm } from "react-hook-form";
+import { Roles } from "../../../components/Roles/Roles";
 
 const PROJECT = gql`
     query PROJECT($id: ID) {
@@ -29,6 +30,8 @@ const UPDATE_PROJECT = gql`
     }
 `
 
+
+
 const SettingsWrapper = styled.div`
 
 `
@@ -42,7 +45,6 @@ export default function SettingsPage() {
     const { handleSubmit, setValue, register } = useForm();
     const { data, loading } = useQuery(PROJECT, { variables: { id: projectid || activeProjectId } });
     const [updateProject, { data: updatedProject, error }] = useMutation(UPDATE_PROJECT, { errorPolicy: 'all', refetchQueries: ["PROJECT"] });
-
 
     useEffect(() => {
         if (!data?.project && !loading) {
@@ -109,7 +111,7 @@ export default function SettingsPage() {
                     </Button>
                 </Box>
                 <h2>Assigned users</h2>
-
+                <Roles />
             </SettingsWrapper>
         </BasicLayout>
     )
