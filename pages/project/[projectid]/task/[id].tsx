@@ -1,15 +1,19 @@
 import { useQuery, useMutation } from "@apollo/client";
+import { Box, Button, FormControl, Grid, InputLabel, LinearProgress, MenuItem, Select, TextField } from "@material-ui/core";
+import { KeyboardDatePicker } from "@material-ui/pickers";
 import gql from "graphql-tag";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useContext, useEffect, useState } from "react";
-import Board from 'react-trello'
+import React, { useContext, useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
+import styled from "styled-components";
+import { ResourceContext } from "../../../../contexts/ResourceContext";
 
-import { UserContext } from "../../../../contexts/UserContext";
 import { BasicLayout } from "../../../../layouts/BasicLayout";
 
-const TASK = gql`
+const GET_TASK = gql`
     query GetTask($id: ID) {
-        task(where: {id:"clc9v4v5i79783524v4up1tos"}) {
+        task(where: {id: $id}) {
             id
             name
             description
@@ -22,6 +26,7 @@ const TASK = gql`
               name
             }
             assignedUser {
+              id
               firstName
               lastName
             }
@@ -31,74 +36,233 @@ const TASK = gql`
             }
           }
     }
+`;
+
+const UPDATE_TASK = gql`
+    mutation UpdateTask($id: ID, $dueDate: DateTime, $estimatedTime: Int, $priority: TaskPriorityType, $name: String, $description: String) {
+        updateTask(where: {id: $id}, data: {dueDate: $dueDate, estimatedTime: $estimatedTime, priority: $priority, name: $name, description: $description }) {
+            id
+        }
+    }
+`;
+
+const UNATTACH_TASK = gql`
+    mutation UnattachTask($id: ID) {
+        updateTask(where: {id: $id}, data: {assignedUser: {disconnect: true }}) {
+            id
+
+        }
+    } 
+`;
+
+const ATTACH_TASK = gql`
+    mutation UnattachTask($id: ID, $assigneeId: ID) {
+        updateTask(where: {id: $id}, data: {assignedUser: {connect: {id: $assigneeId} }}) {
+            id
+        }
+    } 
+`;
+
+const TaskWrapper = styled.div`
+    margin: 20px;
 `
-
-// const PROJECT = gql`
-//     query PROJECT($id: ID) {
-//         project(where: {id: $id}) {
-//             id
-//             title
-//             tasks {
-//               id
-//               name
-//               priority
-//               assignedUser {
-//                 firstName
-//                 lastName
-//               }
-//               createdBy {
-//                 firstName
-//                 lastName
-//               }
-//               status
-//               dueDate
-//               description
-              
-//             }
-//           }
-//     }
-// `;
-
-// const MOVE_TASK = gql`
-//     mutation MoveTask($id: ID, $status: TaskStatusType) {
-//         updateTask(where: {id: $id}, data: {status: $status}) {
-//             id
-//         }
-//     }
-// `
-
 
 export default function TaskPage() {
     const router = useRouter();
 
-    const { id } = router.query;
-    // const { userId } = useContext(UserContext);
+    const { id, projectid } = router.query;
 
-    const { data, loading } = useQuery(TASK);
-    console.log(data)
+    const { data, loading } = useQuery(GET_TASK, { variables: { id } });
+    const { activeProjectId, activeProjectAssigneeUsers, setActiveProjectId } = useContext(ResourceContext);
 
 
-    // const { data, loading } = useQuery(PROJECT, { variables: { id } });
-    // const [moveTask, { data: movedTask, error }] = useMutation(MOVE_TASK, { errorPolicy: 'all' });
+    const [updateTask, { data: updatedTask, error }] = useMutation(UPDATE_TASK, { errorPolicy: 'all', refetchQueries: ["PROJECT", "GetTask"] });
+    const [unattachTask, { data: unattachedTask }] = useMutation(UNATTACH_TASK, { errorPolicy: 'all', refetchQueries: ["PROJECT"] });
+    const [attachTask, { data: attachedTask }] = useMutation(ATTACH_TASK, { errorPolicy: 'all', refetchQueries: ["PROJECT"] });
+    const handleUpdateTask = async (values) => {
+        if (values.assigneeId === "none") {
+            await unattachTask({
+                variables: {
+                    id
+                }
+            })
+        } else {
+            await attachTask({
+                variables: {
+                    id,
+                    assigneeId: values.assigneeId
+                }
+            })
+        }
+        await updateTask({
+            variables: {
+                id,
+                ...values,
+                estimatedTime: +values.estimatedTime
+            }
+        });
+    }
+    const { register, handleSubmit, control, formState: { errors }, reset, setValue } = useForm();
 
-   
+    useEffect(() => {
+        if (!data?.task && !loading) {
+            router.push("/")
+        }
+        setActiveProjectId(projectid?.toString());
 
-    // const { project } = data;
+        // return () => {
+        //     setActiveProjectId(null);
+        // }
+    }, [data, loading, setActiveProjectId]);
 
-    
+    useEffect(() => {
+        if (data?.task) {
+            setValue("name", data.task.name);
+            setValue("description", data.task.description);
+            setValue("estimatedTime", data.task.estimatedTime);
+            setValue("assigneeId", data.task.assignedUser?.id);
+            setValue("priority", data.task.priority);
+            setValue("tags", data.task.tags);
+            setValue("dueDate", data.task.dueDate);
+        }
+    }, [data])
 
-    // useEffect(() => {
-    //     console.log(data)
-    //     if (!data?.project && !loading) {
-    //         router.push("/");
-    //     }
-    // }, [id, loading, data]);
+    if (loading) {
+        return (
+            <BasicLayout>
+                <LinearProgress />
+            </BasicLayout>
+        )
+    }
 
-    
 
     return (
         <BasicLayout>
-            Task page {id}
+            <Link href={`/project/${activeProjectId}`}>Back to project</Link>
+            <TaskWrapper>
+                <Box component="form" onSubmit={handleSubmit(handleUpdateTask)}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Task name"
+                                type="text"
+                                margin="dense"
+                                fullWidth
+                                {...register("name", {
+                                    required: true
+                                })}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Task description"
+                                type="text"
+                                margin="dense"
+                                multiline
+                                fullWidth
+                                minRows={5}
+                                {...register("description")}
+                            />
+                        </Grid>
+
+                        <Grid item xs={12}>
+                            <TextField
+                                margin="dense"
+                                id="tags"
+                                label="Tags"
+                                type="text"
+                                fullWidth
+                                {...register("tags")}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                margin="dense"
+                                id="estimatedTime"
+                                label="Estimated time"
+                                type="number"
+                                fullWidth
+                                {...register("estimatedTime")}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Controller
+                                name="dueDate"
+                                control={control}
+                                render={({ field: { ref, ...rest } }) => (
+                                    <KeyboardDatePicker
+                                        margin="normal"
+                                        id="date-picker-dialog"
+                                        format="dd/MM/yyyy"
+                                        fullWidth
+                                        initialFocusedDate={Date.now()}
+                                        label="Due date"
+                                        KeyboardButtonProps={{
+                                            "aria-label": "change due date",
+                                        }}
+                                        invalidDateMessage={"Due date is required"}
+                                        {...rest}
+                                    />
+                                )}
+                            />
+                        </Grid>
+
+                        <Grid item xs={12}>
+                            <Controller
+                                name="assigneeId"
+                                control={control}
+                                defaultValue="none"
+                                render={({ field: { ref, ...rest } }) => (
+                                    <FormControl fullWidth>
+                                        <InputLabel id="demo-simple-select-label">Assignee</InputLabel>
+                                        <Select
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            {...rest}
+                                        >
+                                            <MenuItem value="none">None</MenuItem>
+                                            {activeProjectAssigneeUsers.map(user => (
+                                                <MenuItem value={user.id}>{user.firstName} {user.lastName}</MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Controller
+                                name="priority"
+                                control={control}
+                                defaultValue="low"
+                                render={({ field: { ref, ...rest } }) => (
+                                    <FormControl fullWidth>
+                                        <InputLabel id="demo-simple-select-label">Priority</InputLabel>
+                                        <Select
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            {...rest}
+                                        >
+                                            <MenuItem value="low">Low</MenuItem>
+                                            <MenuItem value="medium">Medium</MenuItem>
+                                            <MenuItem value="high">High</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                )}
+                            />
+                        </Grid>
+                    </Grid>
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                    >
+                        Zapisz
+                    </Button>
+
+                </Box>
+            </TaskWrapper>
+
         </BasicLayout>
     )
 
