@@ -8,8 +8,8 @@ import { ResourceContext } from "../../contexts/ResourceContext";
 import { UserContext } from "../../contexts/UserContext";
 
 const CREATE_TASK = gql`
-    mutation CreateTask($projectId: ID, $userId: ID, $dueDate: DateTime, $estimatedTime: Int, $priority: TaskPriorityType, $name: String, $description: String) {
-        createTask(data: {project: {connect: {id: $projectId}}, createdBy: {connect: {id: $userId}}, dueDate: $dueDate, estimatedTime: $estimatedTime, priority: $priority, name: $name, description: $description, status: backlog}) {
+    mutation CreateTask($projectId: ID, $userId: ID, $dueDate: DateTime, $estimatedTime: Int, $priority: TaskPriorityType, $name: String, $description: String, $assigneeId: ID) {
+        createTask(data: {project: {connect: {id: $projectId}}, createdBy: {connect: {id: $userId}}, dueDate: $dueDate, estimatedTime: $estimatedTime, priority: $priority, name: $name, description: $description, status: backlog, assignedUser: {connect: {id: $assigneeId}}}) {
             id
         }
     }
@@ -18,7 +18,7 @@ const CREATE_TASK = gql`
 export const CreateTaskModal = () => {
     const { isCreateTaskModalOpen, setIsCreateTaskModalOpen } = useContext(ModalContext);
     const { activeProjectId, activeProjectAssigneeUsers } = useContext(ResourceContext);
-    const [createTask, { loading, error }] = useMutation(CREATE_TASK, {refetchQueries: ["PROJECT"]});
+    const [createTask, { loading, error }] = useMutation(CREATE_TASK, { refetchQueries: ["PROJECT"] });
     const { userId } = useContext(UserContext);
 
     const { register, handleSubmit, control, formState: { errors }, reset } = useForm({
@@ -29,6 +29,7 @@ export const CreateTaskModal = () => {
             assigneeId: null,
             name: "",
             description: "",
+            tags: ""
         }
     });
 
@@ -37,15 +38,18 @@ export const CreateTaskModal = () => {
     }, [isCreateTaskModalOpen])
 
     const handleCreateTask = async (values) => {
-        createTask({variables: {
-            projectId: activeProjectId,
-            userId,
-            dueDate: values.dueDate,
-            estimatedTime: +values.estimatedTime,
-            priority: values.priority,
-            name: values.name,
-            description: values.description,
-        }})
+        createTask({
+            variables: {
+                projectId: activeProjectId,
+                userId,
+                dueDate: values.dueDate,
+                estimatedTime: +values.estimatedTime,
+                priority: values.priority,
+                name: values.name,
+                description: values.description,
+                assigneeId: values.assigneeId,
+            }
+        })
         setIsCreateTaskModalOpen(false)
     }
 
@@ -70,9 +74,7 @@ export const CreateTaskModal = () => {
                     label="Tags"
                     type="text"
                     fullWidth
-                // {...register("name", {
-                //     required: true
-                // })}
+                    {...register("tags")}
                 />
                 <TextField
                     margin="dense"
@@ -80,9 +82,7 @@ export const CreateTaskModal = () => {
                     label="Estimated time"
                     type="number"
                     fullWidth
-                    {...register("estimatedTime", {
-                        required: true
-                    })}
+                    {...register("estimatedTime")}
                 />
                 <Controller
                     name="dueDate"
@@ -107,9 +107,8 @@ export const CreateTaskModal = () => {
                 />
                 <Controller
                     name="assigneeId"
-
+                    defaultValue="none"
                     control={control}
-                    rules={{ required: true }}
                     render={({ field: { ref, ...rest } }) => (
                         <FormControl fullWidth>
                             <InputLabel id="demo-simple-select-label">Assignee</InputLabel>
@@ -118,6 +117,7 @@ export const CreateTaskModal = () => {
                                 id="demo-simple-select"
                                 {...rest}
                             >
+                                <MenuItem value="none">None</MenuItem>
                                 {activeProjectAssigneeUsers.map(user => (
                                     <MenuItem value={user.id}>{user.firstName} {user.lastName}</MenuItem>
                                 ))}
@@ -129,7 +129,6 @@ export const CreateTaskModal = () => {
                     name="priority"
                     control={control}
                     defaultValue="low"
-                    rules={{ required: true }}
                     render={({ field: { ref, ...rest } }) => (
                         <FormControl fullWidth>
                             <InputLabel id="demo-simple-select-label">Priority</InputLabel>
@@ -152,9 +151,7 @@ export const CreateTaskModal = () => {
                     type="text"
                     multiline
                     fullWidth
-                    {...register("description", {
-                        required: true
-                    })}
+                    {...register("description")}
                 />
             </DialogContent>
             <DialogActions>
