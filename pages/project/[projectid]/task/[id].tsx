@@ -8,6 +8,7 @@ import React, { useContext, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import styled from "styled-components";
 import { Comments } from "../../../../components/Comments/Comments";
+import { Subtasks } from "../../../../components/Subtasks/Subtasks";
 import { ResourceContext } from "../../../../contexts/ResourceContext";
 import { UserContext } from "../../../../contexts/UserContext";
 
@@ -49,6 +50,15 @@ const GET_TASK = gql`
     }
 `;
 
+const GET_SUBTASKS = gql`
+    query GetSubtasks($id: ID) {
+        tasks(where: {parentTask: {id: {equals: $id}}}) {
+            id
+            name
+        }
+    }
+`
+
 const UPDATE_TASK = gql`
     mutation UpdateTask($id: ID, $dueDate: DateTime, $estimatedTime: Int, $priority: TaskPriorityType, $name: String, $description: String, $tags: String) {
         updateTask(where: {id: $id}, data: {dueDate: $dueDate, estimatedTime: $estimatedTime, priority: $priority, name: $name, description: $description, tags: $tags }) {
@@ -84,8 +94,11 @@ export default function TaskPage() {
     const { id, projectid } = router.query;
 
     const { data, loading } = useQuery(GET_TASK, { variables: { id } });
+    const { data: subtasks } = useQuery(GET_SUBTASKS, { variables: { id } });
     const { activeProjectId, activeProjectAssigneeUsers, setActiveProjectId, setActiveTaskId } = useContext(ResourceContext);
     const { userId } = useContext(UserContext);
+
+    console.log(subtasks)
 
     const [updateTask, { data: updatedTask, error }] = useMutation(UPDATE_TASK, { errorPolicy: 'all', refetchQueries: ["PROJECT", "GetTask"] });
     const [unattachTask, { data: unattachedTask }] = useMutation(UNATTACH_TASK, { errorPolicy: 'all', refetchQueries: ["PROJECT"] });
@@ -121,7 +134,7 @@ export default function TaskPage() {
         }
         setActiveProjectId(projectid?.toString());
         setActiveTaskId(id?.toString());
-    }, [data, loading, setActiveProjectId]);
+    }, [data, loading, setActiveProjectId, setActiveTaskId]);
 
     useEffect(() => {
         if (data?.task) {
@@ -269,7 +282,8 @@ export default function TaskPage() {
                     </Button>
 
                 </Box>
-                <Comments comments={data.task.comments} userId={userId} taskId={id.toString()} />
+                <Subtasks subtasks={subtasks?.tasks} />
+                <Comments comments={data?.task?.comments} userId={userId} taskId={id.toString()} />
             </TaskWrapper>
 
         </BasicLayout>
