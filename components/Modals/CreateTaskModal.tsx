@@ -8,17 +8,17 @@ import { ResourceContext } from "../../contexts/ResourceContext";
 import { UserContext } from "../../contexts/UserContext";
 
 const CREATE_TASK = gql`
-    mutation CreateTask($projectId: ID, $userId: ID, $dueDate: DateTime, $estimatedTime: Int, $priority: TaskPriorityType, $name: String, $description: String, $assigneeId: ID, $tags: String) {
-        createTask(data: {project: {connect: {id: $projectId}}, createdBy: {connect: {id: $userId}}, dueDate: $dueDate, estimatedTime: $estimatedTime, priority: $priority, name: $name, description: $description, status: backlog, assignedUser: {connect: {id: $assigneeId}}, tags: $tags}) {
+    mutation CreateTask($projectId: ID, $userId: ID, $dueDate: DateTime, $estimatedTime: Int, $priority: TaskPriorityType, $name: String, $description: String, $tags: String) {
+        createTask(data: {project: {connect: {id: $projectId}}, createdBy: {connect: {id: $userId}}, dueDate: $dueDate, estimatedTime: $estimatedTime, priority: $priority, name: $name, description: $description, status: backlog, tags: $tags}) {
             id
         }
     }
-`
+`;
 
 export const CreateTaskModal = () => {
     const { isCreateTaskModalOpen, setIsCreateTaskModalOpen } = useContext(ModalContext);
     const { activeProjectId, activeProjectAssigneeUsers } = useContext(ResourceContext);
-    const [createTask, { loading, error }] = useMutation(CREATE_TASK, { refetchQueries: ["PROJECT"] });
+    const [createTask, { data: createdTask }] = useMutation(CREATE_TASK, { refetchQueries: ["PROJECT"] });
     const { userId } = useContext(UserContext);
 
     const { register, handleSubmit, control, formState: { errors }, reset } = useForm({
@@ -38,7 +38,7 @@ export const CreateTaskModal = () => {
     }, [isCreateTaskModalOpen])
 
     const handleCreateTask = async (values) => {
-        createTask({
+        await createTask({
             variables: {
                 projectId: activeProjectId,
                 userId,
@@ -47,7 +47,6 @@ export const CreateTaskModal = () => {
                 priority: values.priority,
                 name: values.name,
                 description: values.description,
-                assigneeId: values.assigneeId,
                 tags: values.tags
             }
         })
@@ -104,26 +103,6 @@ export const CreateTaskModal = () => {
                             invalidDateMessage={"Due date is required"}
                             {...rest}
                         />
-                    )}
-                />
-                <Controller
-                    name="assigneeId"
-                    defaultValue="none"
-                    control={control}
-                    render={({ field: { ref, ...rest } }) => (
-                        <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">Assignee</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                {...rest}
-                            >
-                                <MenuItem value="none">None</MenuItem>
-                                {activeProjectAssigneeUsers.map(user => (
-                                    <MenuItem value={user.id}>{user.firstName} {user.lastName}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
                     )}
                 />
                 <Controller
