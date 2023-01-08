@@ -27,7 +27,7 @@ const Navbar = ({ page }: { page?: "index" | "project" | "task" | "projectSettin
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const { loggedIn, firstName, unauthenticate, email } = useContext(UserContext);
-    const { setIsCreateProjectModalOpen, setIsCreateTaskModalOpen } = useContext(ModalContext);
+    const { setIsCreateProjectModalOpen, setIsCreateTaskModalOpen, setIsCreateSubtaskModalOpen } = useContext(ModalContext);
     const { activeProjectId } = useContext(ResourceContext);
 
     const showMenu = (event) => {
@@ -56,6 +56,9 @@ const Navbar = ({ page }: { page?: "index" | "project" | "task" | "projectSettin
                             <Button variant="contained" onClick={() => setIsCreateTaskModalOpen(true)}>create task</Button>
                             <Link href={`/project/${activeProjectId}/settings`}><Button variant="contained">project settings</Button></Link>
                         </>
+                    )}
+                    {page === "task" && (
+                        <Button variant="contained" onClick={() => setIsCreateSubtaskModalOpen(true)}>create subtask</Button>
                     )}
                 </div>
                 {loggedIn ? (
@@ -86,13 +89,13 @@ const Navbar = ({ page }: { page?: "index" | "project" | "task" | "projectSettin
                             open={open}
                             onClose={() => setAnchorEl(null)}
                         >
-                            <MenuItem onClick={handleLogOut}>Wyloguj się</MenuItem>
+                            <MenuItem onClick={handleLogOut}>Log out</MenuItem>
                         </Menu>
                     </div>
                 ) : (
                     <Link href="/login">
                         <Button color="inherit" >
-                            Zaloguj się
+                            Log in
                         </Button>
                     </Link>
                 )}
