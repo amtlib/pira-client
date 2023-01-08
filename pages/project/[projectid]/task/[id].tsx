@@ -268,7 +268,7 @@ export default function TaskPage() {
                         variant="contained"
                         color="primary"
                     >
-                        Zapisz
+                        Save
                     </Button>
 
                 </Box>
