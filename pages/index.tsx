@@ -37,7 +37,7 @@ export default function Home() {
       {loading && <LinearProgress />}
       <div style={{ width: "100%", }}>
         {userId ? (<>{
-          projects ? projects.map(project => (
+          projects.length ? projects.map(project => (
             <ProjectCard project={project.project} key={project.project.id} />
           )) : (
             <NoProjects />
