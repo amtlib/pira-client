@@ -11,6 +11,7 @@ import { BasicLayout } from "../../../layouts/BasicLayout";
 import { Box, Button, Grid, TextField } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import { Roles } from "../../../components/Roles/Roles";
+import { DeleteProject } from "../../../components/DeleteProject/DeleteProject";
 
 const PROJECT = gql`
     query PROJECT($id: ID) {
@@ -107,11 +108,13 @@ export default function SettingsPage() {
                         variant="contained"
                         color="primary"
                     >
-                        Zapisz
+                        Save
                     </Button>
                 </Box>
                 <h2>Assigned users</h2>
                 <Roles />
+                <h2>Delete project</h2>
+                <DeleteProject />
             </SettingsWrapper>
         </BasicLayout>
     )
