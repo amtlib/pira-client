@@ -5,6 +5,7 @@ import { ModalContext } from "../contexts/ModalContext";
 export function ModalContainer({ children }) {
     const [isCreateProjectModalOpen, setIsCreateProjectModalOpen] = useState(false);
     const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
+    const [isCreateSubtaskModalOpen, setIsCreateSubtaskModalOpen] = useState(false);
     
 
 
@@ -12,6 +13,8 @@ export function ModalContainer({ children }) {
         isCreateProjectModalOpen,
         setIsCreateProjectModalOpen,
         isCreateTaskModalOpen,
-        setIsCreateTaskModalOpen
+        setIsCreateTaskModalOpen,
+        isCreateSubtaskModalOpen,
+        setIsCreateSubtaskModalOpen
     }}>{children}</ModalContext.Provider>
 }
