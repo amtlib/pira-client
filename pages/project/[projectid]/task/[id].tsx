@@ -84,7 +84,7 @@ export default function TaskPage() {
     const { id, projectid } = router.query;
 
     const { data, loading } = useQuery(GET_TASK, { variables: { id } });
-    const { activeProjectId, activeProjectAssigneeUsers, setActiveProjectId } = useContext(ResourceContext);
+    const { activeProjectId, activeProjectAssigneeUsers, setActiveProjectId, setActiveTaskId } = useContext(ResourceContext);
     const { userId } = useContext(UserContext);
 
     const [updateTask, { data: updatedTask, error }] = useMutation(UPDATE_TASK, { errorPolicy: 'all', refetchQueries: ["PROJECT", "GetTask"] });
@@ -120,10 +120,7 @@ export default function TaskPage() {
             router.push("/")
         }
         setActiveProjectId(projectid?.toString());
-
-        // return () => {
-        //     setActiveProjectId(null);
-        // }
+        setActiveTaskId(id?.toString());
     }, [data, loading, setActiveProjectId]);
 
     useEffect(() => {
