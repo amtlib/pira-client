@@ -25,6 +25,7 @@ const Label = styled.span<{ priority: "low" | "medium" | "high" }>`
         background-color: green;
     ` : priority === "medium" ? css`
         background-color: yellow;
+        color: black;
     ` : css`
         background-color: red;
     `}
