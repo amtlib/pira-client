@@ -8,10 +8,11 @@ import styled from "styled-components";
 
 import { UserContext } from "../../../contexts/UserContext";
 import { BasicLayout } from "../../../layouts/BasicLayout";
-import { Box, Button, Grid, TextField } from "@material-ui/core";
+import { Box, Button, Grid, makeStyles, Paper, TextField } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import { Roles } from "../../../components/Roles/Roles";
 import { DeleteProject } from "../../../components/DeleteProject/DeleteProject";
+import { BackButton } from "../../../components/BackButton/BackButton";
 
 const PROJECT = gql`
     query PROJECT($id: ID) {
@@ -31,17 +32,26 @@ const UPDATE_PROJECT = gql`
     }
 `
 
-
+const useStyles = makeStyles({
+    wrapper: {
+        padding: 15,
+        margin: "20px 0"
+    },
+    button: {
+        margin: "20px 0"
+    }
+})
 
 const SettingsWrapper = styled.div`
-
+    margin: 20px;
 `
 
 export default function SettingsPage() {
     const router = useRouter();
+    const classes = useStyles();
 
     const { projectid } = router.query;
-    const { userId } = useContext(UserContext);
+    const { userId, type } = useContext(UserContext);
     const { setActiveProjectId, activeProjectId } = useContext(ResourceContext);
     const { handleSubmit, setValue, register } = useForm();
     const { data, loading } = useQuery(PROJECT, { variables: { id: projectid || activeProjectId } });
@@ -74,46 +84,46 @@ export default function SettingsPage() {
 
     return (
         <BasicLayout page="projectSettings">
-            <Link href={`/project/${activeProjectId}`}>Back to project</Link>
             <SettingsWrapper>
-                <h2>Basic settings</h2>
-                <Box component="form" onSubmit={handleSubmit(handleUpdateSettings)}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Project name"
-                                type="text"
-                                margin="dense"
-                                defaultValue=" "
-                                fullWidth
-                                {...register("title", { required: true })}
-                            />
+                <Paper elevation={2} className={classes.wrapper}>
+                    <h2>Basic settings</h2>
+                    <Box component="form" onSubmit={handleSubmit(handleUpdateSettings)}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    label="Project name"
+                                    type="text"
+                                    margin="dense"
+                                    defaultValue=" "
+                                    fullWidth
+                                    {...register("title", { required: true })}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    label="Project description"
+                                    type="text"
+                                    margin="dense"
+                                    multiline
+                                    fullWidth
+                                    defaultValue=" "
+                                    minRows={5}
+                                    {...register("description")}
+                                />
+                            </Grid>
                         </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Project description"
-                                type="text"
-                                margin="dense"
-                                multiline
-                                fullWidth
-                                defaultValue=" "
-                                minRows={5}
-                                {...register("description")}
-                            />
-                        </Grid>
-                    </Grid>
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                    >
-                        Save
-                    </Button>
-                </Box>
-                <h2>Assigned users</h2>
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            className={classes.button}
+                        >
+                            Save
+                        </Button>
+                    </Box>
+                </Paper>
                 <Roles />
-                <h2>Delete project</h2>
                 <DeleteProject />
             </SettingsWrapper>
         </BasicLayout>
