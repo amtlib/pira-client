@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import React, { useContext, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import styled from "styled-components";
+import { BackButton } from "../../../../components/BackButton/BackButton";
 import { Comments } from "../../../../components/Comments/Comments";
 import { Subtasks } from "../../../../components/Subtasks/Subtasks";
 import { ResourceContext } from "../../../../contexts/ResourceContext";
@@ -159,7 +160,6 @@ export default function TaskPage() {
 
     return (
         <BasicLayout page="task">
-            <Link href={`/project/${activeProjectId}`}>Back to project</Link>
             <TaskWrapper>
                 <Box component="form" onSubmit={handleSubmit(handleUpdateTask)}>
                     <Grid container spacing={2}>
