@@ -57,12 +57,12 @@ const useStyles = makeStyles({
     tableWrapper: {
         width: "500px"
     },
-    table: {
-        // minWidth: 650,
-        // margin: "0 auto"
+    button: {
+        margin: "20px 0"
     },
     wrapper: {
-
+        padding: 15,
+        margin: "20px 0"
     }
 
 });
@@ -121,81 +121,86 @@ export const Roles = () => {
 
     const handleAssign = () => {
         if (typeof assignValue === "object") {
-            assignUser({variables: {
-                projectId: activeProjectId,
-                userId: assignValue.id
-            }})
+            assignUser({
+                variables: {
+                    projectId: activeProjectId,
+                    userId: assignValue.id
+                }
+            })
             setAssignValue(undefined);
             setAssignInputValue("");
         }
     }
 
     return (
-        <div className={classes.wrapper}>
+        <>
             <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-                <TableContainer component={Paper} className={classes.tableWrapper}>
-                    <Table className={classes.table} >
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>User</TableCell>
-                                <TableCell>Role</TableCell>
-                                <TableCell>Action</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {data?.assigneeUsers.map(({ user, role, id }) => (
-                                <TableRow key={id}>
-                                    <TableCell component="th" scope="row">
-                                        {user.firstName} {user.lastName}
-                                    </TableCell>
-                                    <TableCell>
-                                        <Controller
-                                            name={`role-${id}`}
-                                            control={control}
-                                            defaultValue="user"
-                                            render={({ field: { ref, ...rest } }) => (
-                                                <FormControl fullWidth>
-                                                    <InputLabel id="demo-simple-select-label">Role</InputLabel>
-                                                    <Select
-                                                        labelId="demo-simple-select-label"
-                                                        id="demo-simple-select"
-                                                        {...rest}
-                                                    >
-                                                        <MenuItem value="admin">Admin</MenuItem>
-                                                        <MenuItem value="manager">Manager</MenuItem>
-                                                        <MenuItem value="user">User</MenuItem>
-                                                        <MenuItem value="client">Client</MenuItem>
-                                                    </Select>
-                                                </FormControl>
-                                            )}
-                                        />
-                                    </TableCell>
-                                    <TableCell>
-                                        <Button variant="contained" color="secondary" onClick={() => handleRemove(id)}>Remove</Button>
-                                    </TableCell>
+                <Paper elevation={2} className={classes.wrapper}>
+                    <h2>Assigned users</h2>
+                    <TableContainer component={Paper} className={classes.tableWrapper}>
+                        <Table className={classes.table}>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>User</TableCell>
+                                    <TableCell>Role</TableCell>
+                                    <TableCell>Action</TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                    <Button variant="contained" color="primary" type="submit">Save</Button>
-                </TableContainer>
-                <h2>Assign user</h2>
-                <Autocomplete
-                    value={assignValue}
-                    onChange={(event, newValue) => {
-                        setAssignValue(newValue);
-                    }}
-                    inputValue={assignInputValue}
-                    onInputChange={(event, newInputValue) => {
-                        setAssignInputValue(newInputValue);
-                    }}
-                    options={users?.users.filter(user => !data?.assigneeUsers.find(assignedUser => assignedUser.user.id === user.id))}
-                    getOptionLabel={(option: { firstName: string; lastName: string; id: string; }) => `${option.firstName} ${option.lastName}`}
-                    style={{ width: 300, marginTop: 20 }}
-                    renderInput={(params) => <TextField {...params} label="User" variant="outlined" />}
-                />
-                <Button variant="contained" onClick={handleAssign}>Assign</Button>
+                            </TableHead>
+                            <TableBody>
+                                {data?.assigneeUsers.map(({ user, role, id }) => (
+                                    <TableRow key={id}>
+                                        <TableCell component="th" scope="row">
+                                            {user.firstName} {user.lastName}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Controller
+                                                name={`role-${id}`}
+                                                control={control}
+                                                defaultValue="user"
+                                                render={({ field: { ref, ...rest } }) => (
+                                                    <FormControl fullWidth>
+                                                        <InputLabel id="demo-simple-select-label">Role</InputLabel>
+                                                        <Select
+                                                            labelId="demo-simple-select-label"
+                                                            id="demo-simple-select"
+                                                            {...rest}
+                                                        >
+                                                            <MenuItem value="admin">Admin</MenuItem>
+                                                            <MenuItem value="manager">Manager</MenuItem>
+                                                            <MenuItem value="user">User</MenuItem>
+                                                            <MenuItem value="client">Client</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
+                                                )}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Button variant="contained" color="secondary" onClick={() => handleRemove(id)}>Remove</Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <Button variant="contained" color="primary" type="submit" className={classes.button}>Save</Button>
+                    <h2>Assign user</h2>
+                    <Autocomplete
+                        value={assignValue}
+                        onChange={(event, newValue) => {
+                            setAssignValue(newValue);
+                        }}
+                        inputValue={assignInputValue}
+                        onInputChange={(event, newInputValue) => {
+                            setAssignInputValue(newInputValue);
+                        }}
+                        options={users?.users.filter(user => !data?.assigneeUsers.find(assignedUser => assignedUser.user.id === user.id))}
+                        getOptionLabel={(option: { firstName: string; lastName: string; id: string; }) => `${option.firstName} ${option.lastName}`}
+                        style={{ width: 300, marginTop: 20 }}
+                        renderInput={(params) => <TextField {...params} label="User" variant="outlined" />}
+                    />
+                    <Button variant="contained" onClick={handleAssign} className={classes.button}>Assign</Button>
+                </Paper>
             </Box>
-        </div>
+        </>
     )
 }
