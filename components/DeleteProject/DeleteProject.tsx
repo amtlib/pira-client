@@ -1,5 +1,5 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { Button, makeStyles } from "@material-ui/core";
+import { Button, makeStyles, Paper } from "@material-ui/core";
 import { useRouter } from "next/router";
 import React, { useContext } from "react";
 import { ResourceContext } from "../../contexts/ResourceContext";
@@ -8,6 +8,10 @@ const useStyles = makeStyles({
     button: {
         backgroundColor: "red",
         color: "white"
+    },
+    wrapper: {
+        padding: 15,
+        margin: "20px 0"
     }
 })
 
@@ -87,6 +91,9 @@ export const DeleteProject = () => {
     }
 
     return (
-        <Button variant="contained" className={classes.button} onClick={handleDelete}>Delete project</Button>
+        <Paper elevation={2} className={classes.wrapper}>
+            <h2>Delete project</h2>
+            <Button variant="contained" className={classes.button} onClick={handleDelete}>Delete project</Button>
+        </Paper>
     )
 }
