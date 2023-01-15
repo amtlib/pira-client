@@ -10,6 +10,7 @@ import { Logo } from '../Logo/LogoWrapper';
 import { ModalContext } from '../../contexts/ModalContext';
 import { ResourceContext } from '../../contexts/ResourceContext';
 import { BackButton } from '../BackButton/BackButton';
+import { useRouter } from 'next/router';
 
 const useStyles = makeStyles(() => ({
     title: {
@@ -40,6 +41,7 @@ const Navbar = ({ page }: { page?: "index" | "project" | "task" | "projectSettin
     const { setIsCreateProjectModalOpen, setIsCreateTaskModalOpen, setIsCreateSubtaskModalOpen } = useContext(ModalContext);
     const { activeProjectId } = useContext(ResourceContext);
     const { userId } = useContext(UserContext);
+    const router = useRouter();
 
     const showMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -48,6 +50,7 @@ const Navbar = ({ page }: { page?: "index" | "project" | "task" | "projectSettin
     const handleLogOut = () => {
         unauthenticate();
         setAnchorEl(null);
+        router.push("/");
     }
 
     return (
