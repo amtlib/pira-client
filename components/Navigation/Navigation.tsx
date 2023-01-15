@@ -39,6 +39,7 @@ const Navbar = ({ page }: { page?: "index" | "project" | "task" | "projectSettin
     const { loggedIn, firstName, unauthenticate, email } = useContext(UserContext);
     const { setIsCreateProjectModalOpen, setIsCreateTaskModalOpen, setIsCreateSubtaskModalOpen } = useContext(ModalContext);
     const { activeProjectId } = useContext(ResourceContext);
+    const { userId } = useContext(UserContext);
 
     const showMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -61,7 +62,7 @@ const Navbar = ({ page }: { page?: "index" | "project" | "task" | "projectSettin
                     <BackButton />
                 )}
                 <div className={classes.buttons}>
-                    {page === "projects" && (
+                    {page === "projects" && userId && (
                         <Button variant="contained" onClick={() => setIsCreateProjectModalOpen(true)}>create project</Button>
                     )}
                     {page === "project" && (
