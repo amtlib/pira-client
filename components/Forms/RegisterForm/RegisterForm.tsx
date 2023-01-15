@@ -132,7 +132,7 @@ const RegisterForm = () => {
                             {...register("email", {
                                 required: true, pattern: {
                                     value: /\S+@\S+\.\S+/,
-                                    message: "Wprowadzona wartość musi być adresem email"
+                                    message: "Please provide a valid email address"
                                 }
                             })}
                             error={!!errors.email}
@@ -152,7 +152,7 @@ const RegisterForm = () => {
                             {...register("password", {
                                 required: true, minLength: {
                                     value: 8,
-                                    message: "Hasło musi mieć conajmniej 8 znaków"
+                                    message: "Password has to have at least 8 characters"
                                 }
                             })}
                             error={!!errors.password}
@@ -171,12 +171,12 @@ const RegisterForm = () => {
                             {...register("passwordRepeat", {
                                 required: true, validate: (val: string) => {
                                     if (watch('password') != val) {
-                                        return "Hasła muszą być takie same";
+                                        return "Passwords have to match";
                                     }
                                 },
                                 minLength: {
                                     value: 8,
-                                    message: "Hasło musi mieć conajmniej 8 znaków"
+                                    message: "Password has to have at least 8 characters"
                                 }
                             })}
                             error={!!errors.passwordRepeat}
@@ -192,10 +192,10 @@ const RegisterForm = () => {
                     color="primary"
                     className={classes.submit}
                 >
-                    Zarejestruj się
+                    Register
                 </Button>
                 <Grid className={classes.login}>
-                    Masz juz konto? <Link href="/login">Zaloguj się!</Link>
+                    Do you have an accout? <Link href="/login">Log in!</Link>
                 </Grid>
             </Box>
         </Box >
